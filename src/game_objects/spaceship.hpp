@@ -1,7 +1,7 @@
 #ifndef SPACESHIP_H
 #define SPACESHIP_H
 
-#include <vector>
+#include <list>
 #include "bullet.hpp"
 
 class Spaceship{
@@ -31,7 +31,7 @@ class Spaceship{
         void rotateClockwise();
 
         //Fires a bullet
-        void fireBullet(std::vector<Bullet>& bulletsOnScreen);
+        void fireBullet(std::list<Bullet>& bulletsOnScreen);
 
         //Returns the current spaceship position and angle
         int getXpos();

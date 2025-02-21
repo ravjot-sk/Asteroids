@@ -34,7 +34,7 @@ class Bullet{
         Bullet(int x, int y, double ang);
 
         //Move the bullet the distance based on how much time
-        void move(int timeElapsed);
+        void move(int timeElapsed=1);
 
         //Returns the off screen flag
         bool isOffScreen();

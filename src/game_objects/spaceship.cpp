@@ -1,7 +1,7 @@
 
 #include "spaceship.hpp"
 #include "game_constants.hpp"
-#include "math.hpp"
+#include "custom_math.hpp"
 #include "SDL2/SDL.h"
 #include <array>
 
@@ -73,7 +73,7 @@ void Spaceship::rotateCounterClockwise(){
 }
 
 //Initialises a new bullet object with the position of the gun and the gun angle
-void Spaceship::fireBullet(std::vector<Bullet>& bulletsOnScreen){
+void Spaceship::fireBullet(std::list<Bullet>& bulletsOnScreen){
     //std::array<double,2> gunCoord = rotatedCoordinates(gunPosX-width/2,gunPosY-height/2,angleDegrees);
     //Initialises a new bullet object at the gun position and the direction of gun pointing
     bulletsOnScreen.emplace_back(xPos + gunPosX, yPos + gunPosY,angleDegrees);

@@ -6,6 +6,7 @@
 #include "spaceship.hpp"
 #include "bullet.hpp"
 #include "texture.hpp"
+#include "asteroid.hpp"
 #include "game_constants.hpp"
 #include <iostream>
 
@@ -15,5 +16,6 @@ bool loadSpaceshipTexture(SDL_Renderer* gameRenderer, gameTexture& spaceshipText
 
 bool loadBulletTexture(SDL_Renderer* gameRenderer, gameTexture& bulletTexture);
 
+bool loadAsteroidTexture(SDL_Renderer* gameRenderer, gameTexture& asteroidTexture);
 
 #endif

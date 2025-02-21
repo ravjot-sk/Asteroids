@@ -69,3 +69,13 @@ bool loadBulletTexture(SDL_Renderer* gameRenderer, gameTexture& bulletTexture){
     }
     return success;
 }
+
+bool loadAsteroidTexture(SDL_Renderer* gameRenderer, gameTexture& asteroidTexture){
+    bool success = true;
+    std::string assetsPath = ASSETS_PATH;
+    if( !asteroidTexture.loadTexture(assetsPath+"images/asteroid.png",gameRenderer)){
+        std::cout<<"Failed to load Asteroid texture!"<<std::endl;
+        success = false;
+    }
+    return success;
+}

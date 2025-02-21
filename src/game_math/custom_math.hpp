@@ -15,4 +15,9 @@ double yComponent(int magnitude, double angle);
 std::array<double,2> rotatedCoordinates(int xPos, int yPos, double angle);
 
 std::array<double,2> rotatedGunCoordinates(int spaceshipXcenter, int spaceshipYcenter, int gunXpos, int gunYpos, double angle);
+
+namespace CustomMath{
+    int getRandomInt(int start, int end);
+    double getRandomDouble(double start, double end);
+}
 #endif

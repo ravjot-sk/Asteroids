@@ -1,10 +1,12 @@
-#include "math.hpp"
+#include "custom_math.hpp"
 #include <cmath>
+#include <random>
 
 double degreeToRadian(double angleDegree){
     return M_PI * angleDegree/180;
 }
 
+//Angle is measured from the vertical. Positive is clockwise direction. 
 double xComponent(int magnitude, double angle){
 
     return magnitude * sin(degreeToRadian(angle));
@@ -28,4 +30,21 @@ std::array<double,2> rotatedGunCoordinates(int spaceshipXcenter, int spaceshipYc
     rotatedRelative[1] += spaceshipYcenter;
     
     return rotatedRelative;
+}
+
+namespace CustomMath{
+    //Might cause performance issues
+    int getRandomInt(int start, int end){
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_int_distribution<int> dist(start,end);
+    return dist(gen);
+    }
+
+    double getRandomDouble(double start, double end){
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<double> dist(start, end);
+        return dist(gen);
+    }
 }

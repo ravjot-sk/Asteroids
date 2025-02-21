@@ -1,4 +1,4 @@
-add_library(GameObjects bullet.cpp spaceship.cpp)
+add_library(GameObjects bullet.cpp spaceship.cpp asteroid.cpp)
 
 find_package(SDL2 REQUIRED)
 

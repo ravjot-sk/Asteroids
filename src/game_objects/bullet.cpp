@@ -1,5 +1,5 @@
 #include "bullet.hpp"
-#include "math.hpp"
+#include "custom_math.hpp"
 #include "game_constants.hpp"
 
 Bullet::Bullet(int x, int y, double ang){
@@ -26,10 +26,10 @@ void Bullet::move(int timeElapsed){
     yPos -= (int) yComponent(BULLET_VELOCITY*timeElapsed,firingAngle);
 
     //Check if bullet is off screen
-    if(xPos<0 || xPos> SCREEN_WIDTH)
+    if(xPos<-width-10 || xPos> SCREEN_WIDTH+10)
         offScreen = true;
     
-    if(yPos<0 || yPos > SCREEN_HEIGHT)
+    if(yPos<-height-10 || yPos > SCREEN_HEIGHT+10)
         offScreen = true;
 }
 

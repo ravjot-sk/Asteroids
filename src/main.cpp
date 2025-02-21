@@ -1,6 +1,7 @@
 #include "initialising.hpp"
 #include "timer.hpp"
 #include <iostream>
+#include <list>
 
 int main(int argc, char* args[]){
     SDL_Window* gameWindow = NULL;
@@ -19,6 +20,8 @@ int main(int argc, char* args[]){
 
     gameTexture bulletTexture;
 
+    gameTexture asteroidTexture;
+
     if (!loadSpaceshipTexture(gameRenderer,spaceshipTexture)){
         std::cout<<"Failed to load spaceship!\n";
         return EXIT_FAILURE;
@@ -29,10 +32,17 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
-    std::vector<Bullet> bulletsOnScreen;
-
+    if( !loadAsteroidTexture(gameRenderer,asteroidTexture)){
+        std::cout<<"Failed to load asteroid!\n";
+        return EXIT_FAILURE;
+    }
+    std::list<Bullet> bulletsOnScreen;
+    std::list<Asteroid> asteroidsOnScreen;
     bool quit = false;
     SDL_Event e;
+
+    GameTimer gameTimer;
+    gameTimer.start();
 
     while(!quit){
     // Handle events (quitting, one-time actions like shooting)
@@ -64,12 +74,37 @@ int main(int argc, char* args[]){
 
         spaceshipTexture.render(gameRenderer,ship.getXpos(),ship.getYpos(),ship.getAngle());
         
+        //Render each bullet and move it
         for(auto& bul : bulletsOnScreen){
             SDL_Point cen = {bul.getCenterX(),bul.getCenterY()};
             bulletTexture.render(gameRenderer,bul.getXpos(),bul.getYpos(),bul.getAngle(),&cen);
-            bul.move(1);
+            bul.move();
         }
+
+        //remove off screen bullets
+        bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
+
+        //Add Asteroids every 5 seconds
+        if(gameTimer.getTicks()/5000 >0){
+            gameTimer.stop();
+            asteroidsOnScreen.emplace_back();
+            gameTimer.start();
+        }
+
+        //Render asteroids on screen and move them
+        for(auto& ast : asteroidsOnScreen){
+            asteroidTexture.render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
+            ast.move();
+            ast.rotate();
+        }
+
+
+        //remove off screen asteroids
+        asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();});
+
         SDL_RenderPresent(gameRenderer);
+
+
     }
 
     spaceshipTexture.free();
