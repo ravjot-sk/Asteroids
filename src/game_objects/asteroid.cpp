@@ -73,6 +73,14 @@ int Asteroid::getYpos(){
     return yPos;
 }
 
+int Asteroid::getWidth(){
+    return width;
+}
+
+int Asteroid::getHeight(){
+    return height;
+}
+
 void Asteroid::move(int timeElapsed){
 
     //Move the asteroid in x and y direction
@@ -93,4 +101,8 @@ void Asteroid::rotate(){
 
 double Asteroid::getAngle(){
     return angle;
+}
+
+void Asteroid::gotHit(){
+    offScreen = true;
 }

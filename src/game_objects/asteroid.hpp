@@ -39,6 +39,11 @@ class Asteroid{
     int getXpos();
     int getYpos();
     double getAngle();
+    int getWidth();
+    int getHeight();
+
+    //After collision set to offscreen
+    void gotHit();
 
 };
 

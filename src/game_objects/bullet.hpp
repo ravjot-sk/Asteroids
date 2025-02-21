@@ -26,7 +26,7 @@ class Bullet{
         bool offScreen;
 
         //Bullet moving speed
-        const static int BULLET_VELOCITY = 5;
+        const static int BULLET_VELOCITY = 10;
 
     
     public:
@@ -45,6 +45,11 @@ class Bullet{
         double getAngle();
         int getCenterX();
         int getCenterY();
+        int getWidth();
+        int getHeight();
+
+        //When target hit, set to offscreen
+        void hitsTarget();
 };
 
 

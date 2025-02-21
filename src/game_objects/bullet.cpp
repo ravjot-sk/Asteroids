@@ -56,3 +56,15 @@ int Bullet::getCenterX(){
 int Bullet::getCenterY(){
     return rotationCenterY;
 }
+
+int Bullet::getWidth(){
+    return width;
+}
+
+int Bullet::getHeight(){
+    return height;
+}
+
+void Bullet::hitsTarget(){
+    offScreen = true;
+}

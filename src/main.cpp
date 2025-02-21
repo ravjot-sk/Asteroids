@@ -1,7 +1,8 @@
 #include "initialising.hpp"
 #include "timer.hpp"
+#include "collision.hpp"
 #include <iostream>
-#include <list>
+
 
 int main(int argc, char* args[]){
     SDL_Window* gameWindow = NULL;
@@ -81,9 +82,6 @@ int main(int argc, char* args[]){
             bul.move();
         }
 
-        //remove off screen bullets
-        bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
-
         //Add Asteroids every 5 seconds
         if(gameTimer.getTicks()/5000 >0){
             gameTimer.stop();
@@ -97,7 +95,20 @@ int main(int argc, char* args[]){
             ast.move();
             ast.rotate();
         }
+        
+        for(auto& ast : asteroidsOnScreen){
+            for(auto& bul : bulletsOnScreen){
+                SDL_Rect bulRect = {bul.getXpos(),bul.getYpos(),bul.getWidth(),bul.getHeight()};
+                SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth(),ast.getHeight()};
+                if(areRectanglesColliding(&bulRect,&astRect)){
+                    bul.hitsTarget();
+                    ast.gotHit();
+                }
+            }
+        }
 
+        //remove off screen bullets
+        bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
 
         //remove off screen asteroids
         asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();});
