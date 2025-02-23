@@ -37,6 +37,8 @@ class Spaceship{
         int getXpos();
         int getYpos();
         double getAngle();
+        int getWidth();
+        int getHeight();
 };
 
 #endif

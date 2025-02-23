@@ -39,6 +39,8 @@ int main(int argc, char* args[]){
     }
     std::list<Bullet> bulletsOnScreen;
     std::list<Asteroid> asteroidsOnScreen;
+    int hitCounter = 0;
+    
     bool quit = false;
     SDL_Event e;
 
@@ -103,6 +105,7 @@ int main(int argc, char* args[]){
                 if(areRectanglesColliding(&bulRect,&astRect)){
                     bul.hitsTarget();
                     ast.gotHit();
+                    hitCounter++;
                 }
             }
         }
@@ -113,10 +116,31 @@ int main(int argc, char* args[]){
         //remove off screen asteroids
         asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();});
 
+        //check spaceship and asteroid collision
+        for(auto& ast : asteroidsOnScreen){
+            SDL_Rect spaceshipRect = {ship.getXpos(),ship.getYpos(),ship.getWidth()-10,ship.getHeight()-10};
+            SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth()-10,ast.getHeight()-10};
+
+            //if collided then quit the main event loop
+            if(areRectanglesColliding(&spaceshipRect,&astRect)){
+                quit = true;
+            }
+        }
+
         SDL_RenderPresent(gameRenderer);
 
 
     }
+
+    //keep the screen until player closes the window
+    quit = false;
+    while(!quit){
+        while(SDL_PollEvent(&e)!=0){
+            if(e.type== SDL_QUIT)
+                quit = true;
+        }
+    }
+
 
     spaceshipTexture.free();
     bulletTexture.free();

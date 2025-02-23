@@ -90,3 +90,11 @@ int Spaceship::getYpos(){
 double Spaceship::getAngle(){
     return angleDegrees;
 }
+
+int Spaceship::getWidth(){
+    return width;
+}
+
+int Spaceship::getHeight(){
+    return height;
+}
