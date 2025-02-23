@@ -2,6 +2,7 @@
 #include "timer.hpp"
 #include "collision.hpp"
 #include <iostream>
+#include <sstream>
 
 
 int main(int argc, char* args[]){
@@ -16,12 +17,13 @@ int main(int argc, char* args[]){
         std::cout<<"\n Window still NULL \n";
         return EXIT_FAILURE;
     }
+
     Spaceship ship;
-    gameTexture spaceshipTexture;
+    imgTexture spaceshipTexture;
 
-    gameTexture bulletTexture;
+    imgTexture bulletTexture;
 
-    gameTexture asteroidTexture;
+    imgTexture asteroidTexture;
 
     if (!loadSpaceshipTexture(gameRenderer,spaceshipTexture)){
         std::cout<<"Failed to load spaceship!\n";
@@ -37,10 +39,25 @@ int main(int argc, char* args[]){
         std::cout<<"Failed to load asteroid!\n";
         return EXIT_FAILURE;
     }
+
+    TTF_Font* scoreFont = NULL;
+    if( !loadTextFont(&scoreFont, 50)){
+        std::cout<<"\nFailed to load font!\n";
+        return EXIT_FAILURE;
+    }
+
     std::list<Bullet> bulletsOnScreen;
     std::list<Asteroid> asteroidsOnScreen;
     int hitCounter = 0;
     
+    //Set up texture for score
+    textTexture scoreTexture;
+    //Transparency set at 190/255
+    scoreTexture.setAlpha(190);
+    //text color set at white
+    SDL_Color scoreColor={255,255,255};
+    std::stringstream scoreText;
+
     bool quit = false;
     SDL_Event e;
 
@@ -116,6 +133,18 @@ int main(int argc, char* args[]){
         //remove off screen asteroids
         asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();});
 
+        scoreText.str("");
+        scoreText<<"Score: "<<hitCounter;
+
+        if( !scoreTexture.loadTextTexture(scoreText.str().c_str(),gameRenderer,scoreColor,scoreFont)){
+            std::cout<<"Unable to render text!\n";
+            return EXIT_FAILURE;
+        }
+
+        scoreTexture.render(gameRenderer,SCREEN_WIDTH-scoreTexture.getWidth()-30, 5);
+
+        bool gameOver = false;
+
         //check spaceship and asteroid collision
         for(auto& ast : asteroidsOnScreen){
             SDL_Rect spaceshipRect = {ship.getXpos(),ship.getYpos(),ship.getWidth()-10,ship.getHeight()-10};
@@ -123,17 +152,19 @@ int main(int argc, char* args[]){
 
             //if collided then quit the main event loop
             if(areRectanglesColliding(&spaceshipRect,&astRect)){
-                quit = true;
+                gameOver = true;
+                break;
             }
         }
 
         SDL_RenderPresent(gameRenderer);
-
+        if(gameOver){
+            break;
+        }
 
     }
 
     //keep the screen until player closes the window
-    quit = false;
     while(!quit){
         while(SDL_PollEvent(&e)!=0){
             if(e.type== SDL_QUIT)
@@ -144,12 +175,18 @@ int main(int argc, char* args[]){
 
     spaceshipTexture.free();
     bulletTexture.free();
+    scoreTexture.free();
+
     SDL_DestroyRenderer(gameRenderer);
     SDL_DestroyWindow(gameWindow);
+    TTF_CloseFont(scoreFont);
 
     gameRenderer = NULL;
     gameWindow = NULL;
-    SDL_Quit();
+    scoreFont = NULL;
+
     IMG_Quit();
+    TTF_Quit();
+    SDL_Quit();
     return EXIT_SUCCESS;
 }
