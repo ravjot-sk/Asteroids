@@ -12,10 +12,11 @@
 
 bool init(SDL_Window** gameWindow, SDL_Renderer** gameRenderer);
 
-bool loadSpaceshipTexture(SDL_Renderer* gameRenderer, gameTexture& spaceshipTexture );
+bool loadSpaceshipTexture(SDL_Renderer* gameRenderer, imgTexture& spaceshipTexture );
 
-bool loadBulletTexture(SDL_Renderer* gameRenderer, gameTexture& bulletTexture);
+bool loadBulletTexture(SDL_Renderer* gameRenderer, imgTexture& bulletTexture);
 
-bool loadAsteroidTexture(SDL_Renderer* gameRenderer, gameTexture& asteroidTexture);
+bool loadAsteroidTexture(SDL_Renderer* gameRenderer, imgTexture& asteroidTexture);
 
+bool loadTextFont(TTF_Font** textFont, int fontSize);
 #endif

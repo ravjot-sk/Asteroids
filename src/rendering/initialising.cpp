@@ -17,7 +17,7 @@ bool init(SDL_Window** gameWindow, SDL_Renderer** gameRenderer){
     }
     
     //create Window
-    *gameWindow = SDL_CreateWindow("Rotation Tutorial", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
+    *gameWindow = SDL_CreateWindow("Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if(*gameWindow == NULL){
         std::cout<<"Failed to create window! SDL Error:"<<SDL_GetError();
         success = false;
@@ -46,36 +46,55 @@ bool init(SDL_Window** gameWindow, SDL_Renderer** gameRenderer){
         return success;
     }
 
+    //Initialize SDL_ttf
+    if( TTF_Init() == -1 ){
+        std::cout<<"SDL_ttf could not initialize! SDL_ttf Error:"<< TTF_GetError()<<"\n";
+        success = false;
+    }
+
     return success;
 }
 
-bool loadSpaceshipTexture(SDL_Renderer* gameRenderer, gameTexture& spaceShipTexture){
+bool loadSpaceshipTexture(SDL_Renderer* gameRenderer, imgTexture& spaceShipTexture){
     bool success = true;
     std::string assetsPath = ASSETS_PATH;
 
-    if( !spaceShipTexture.loadTexture(assetsPath + "images/spaceship.png",gameRenderer) ){
+    if( !spaceShipTexture.loadImgTexture(assetsPath + "images/spaceship.png",gameRenderer) ){
         std::cout<<"Failed to load Spaceship texture!"<<std::endl;
         success = false;
     }
     return success;
 }
 
-bool loadBulletTexture(SDL_Renderer* gameRenderer, gameTexture& bulletTexture){
+bool loadBulletTexture(SDL_Renderer* gameRenderer, imgTexture& bulletTexture){
     bool success = true;
     std::string assetsPath = ASSETS_PATH;
-    if ( !bulletTexture.loadTexture(assetsPath+"images/bullet.png",gameRenderer)){
+    if ( !bulletTexture.loadImgTexture(assetsPath+"images/bullet.png",gameRenderer)){
         std::cout<<"Failed to load Bullet texture!"<<std::endl;
         success = false;
     }
     return success;
 }
 
-bool loadAsteroidTexture(SDL_Renderer* gameRenderer, gameTexture& asteroidTexture){
+bool loadAsteroidTexture(SDL_Renderer* gameRenderer, imgTexture& asteroidTexture){
     bool success = true;
     std::string assetsPath = ASSETS_PATH;
-    if( !asteroidTexture.loadTexture(assetsPath+"images/asteroid.png",gameRenderer)){
+    if( !asteroidTexture.loadImgTexture(assetsPath+"images/asteroid.png",gameRenderer)){
         std::cout<<"Failed to load Asteroid texture!"<<std::endl;
         success = false;
+    }
+    return success;
+}
+
+bool loadTextFont(TTF_Font** textFont, int fontSize){
+    bool success = true;
+    std::string assetsPath = ASSETS_PATH;
+    std::string fontPath = assetsPath+"fonts/DotMatrixVar-ExpandedBold.ttf";
+    *textFont = TTF_OpenFont(fontPath.c_str(),fontSize);
+    if(textFont==NULL){
+        std::cout<<"Failed to load font! SDL_TTF Error: "<<TTF_GetError()<<std::endl;
+        success = false;
+        return success;
     }
     return success;
 }
