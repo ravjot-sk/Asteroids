@@ -3,6 +3,11 @@ add_library(Textures texture.cpp)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")
 
 find_package(SDL2_image REQUIRED)
+if (SDL2_IMAGE_FOUND)
+    message(STATUS "SDL2_IMAGE found: ${SDL2_IMAGE_INCLUDE_DIRS}")
+else()
+    message(FATAL_ERROR "SDL2_IMAGE not found!")
+endif()
 
 target_include_directories(Textures
     PUBLIC 

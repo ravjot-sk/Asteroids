@@ -9,6 +9,8 @@ add_subdirectory(timing)
 
 add_subdirectory(collision)
 
+add_subdirectory(game_text)
+
 add_executable(Asteroids main.cpp)
 
-target_link_libraries(Asteroids PUBLIC Initialising Timing Collider)
+target_link_libraries(Asteroids PUBLIC Initialising Timing Collider GameTexts)
