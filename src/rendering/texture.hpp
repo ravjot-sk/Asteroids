@@ -6,38 +6,6 @@
 #include "SDL2_image/SDL_image.h"
 #include "SDL2_ttf/SDL_ttf.h"
 
-/* class gameTexture{
-    private:
-    //actual hardware texture
-    SDL_Texture* aTexture;
-    
-    //Image dimensions
-    int width;
-    int height;
-
-public:
-    gameTexture();
-    
-    //Deallocates Memory
-    ~gameTexture();
-    
-    //Load image from specfied path
-    bool loadTexture(std::string path, SDL_Renderer* gameRenderer);
-    
-    //Deallocates Texture
-    void free();
-    
-    //Render Texture at given point
-    void render(SDL_Renderer* gameRenderer, int x, int y, double angle = 0.0, SDL_Point* center = NULL);
-    
-
-    
-    //Get Image dimensions
-    int getWidth();
-    int getHeight();
-    
-};
- */
 //basic Texture class
 class basicTexture{
     protected:
@@ -53,6 +21,14 @@ class basicTexture{
 
         //destructor
         ~basicTexture();
+
+         // Prevent copying
+    basicTexture(const basicTexture&) = delete;
+    basicTexture& operator=(const basicTexture&) = delete;
+
+    // Allow move semantics
+    basicTexture(basicTexture&& other) noexcept;
+    basicTexture& operator=(basicTexture&& other) noexcept;
 
         void free();
 
