@@ -4,7 +4,11 @@
 
 //angles are measured from vertical. positive is clockwise direction
 
-Asteroid::Asteroid(){
+Asteroid::Asteroid(int h, int w){
+
+    height = h;
+    width = w;
+
     offScreen = false;
 
     rotationSpeed = CustomMath::getRandomInt(3,8);

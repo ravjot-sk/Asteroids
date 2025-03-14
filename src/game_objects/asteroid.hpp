@@ -5,8 +5,8 @@
 class Asteroid{
     private:
     //Asteroid dimensions
-    static const int height = 200;
-    static const int width = 177;
+    int height ;
+    int width ;
 
     //Asteroid rotation speed
     int rotationSpeed;
@@ -24,7 +24,7 @@ class Asteroid{
 
     public:
     // Constructor initialises screen edge where the asteroid originates and sets the direction and velocity of travel randomly 
-    Asteroid();
+    Asteroid(int h=200, int w=177);
 
     //Check if bullet is off screen
     bool isOffScreen();
