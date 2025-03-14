@@ -23,8 +23,6 @@ bool init(SDL_Window** gameWindow, SDL_Renderer** gameRenderer){
         success = false;
         return success;
     }
-    if(*gameWindow!=NULL)
-        std::cout<<"\n Window created successfully\n";
     
     //creates a renderer that refreshes at the rate of the monitor vertical refresh rate
     *gameRenderer = SDL_CreateRenderer(*gameWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
@@ -33,8 +31,6 @@ bool init(SDL_Window** gameWindow, SDL_Renderer** gameRenderer){
         success = false;
         return success;
     }
-    if(*gameRenderer!=NULL)
-        std::cout<<"\nRenderer created successfully\n";
     
     SDL_SetRenderDrawColor(*gameRenderer, 0xFF, 0xFF, 0xFF, 0xFF);
     
@@ -76,12 +72,37 @@ bool loadBulletTexture(SDL_Renderer* gameRenderer, imgTexture& bulletTexture){
     return success;
 }
 
-bool loadAsteroidTexture(SDL_Renderer* gameRenderer, imgTexture& asteroidTexture){
+/*bool loadAsteroidTexture(SDL_Renderer* gameRenderer, imgTexture& asteroidTexture){
     bool success = true;
     std::string assetsPath = ASSETS_PATH;
     if( !asteroidTexture.loadImgTexture(assetsPath+"images/asteroid.png",gameRenderer)){
         std::cout<<"Failed to load Asteroid texture!"<<std::endl;
         success = false;
+    }
+    return success;
+}*/
+
+//loads all images to be used as asteroids as textures in the provided vector
+bool loadAsteroidVectorTextures(SDL_Renderer* gameRenderer, std::vector<imgTexture>& asteroidTextureVector){
+    bool success = true;
+    std::string asteroidImgDirectoryPath = ASSETS_PATH;
+    asteroidImgDirectoryPath = asteroidImgDirectoryPath + "images/asteroid_images";
+
+    for(const auto & astImg : std::filesystem::directory_iterator(asteroidImgDirectoryPath)){
+        if (astImg.path().extension() != ".png") {
+            continue;  // Skip non-PNG files
+        }
+        std::cout<<astImg.path()<<std::endl;
+        imgTexture temp;
+        
+        if(! temp.loadImgTexture(astImg.path(),gameRenderer)){
+            std::cout<<"Failed to load Asteroid texture for image : "<<astImg.path()<<std::endl;
+            success = false;
+            break;
+        }
+        
+        //move constructor used explicitly to prevent pointer issues with SDL_Texture* aTexture memeber of imgTexture class
+        asteroidTextureVector.push_back(std::move(temp));
     }
     return success;
 }

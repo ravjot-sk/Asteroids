@@ -1,6 +1,7 @@
 #include "initialising.hpp"
 #include "timer.hpp"
 #include "collision.hpp"
+#include "custom_math.hpp"
 #include <iostream>
 #include <sstream>
 
@@ -23,7 +24,9 @@ int main(int argc, char* args[]){
 
     imgTexture bulletTexture;
 
-    imgTexture asteroidTexture;
+    //imgTexture asteroidTexture;
+
+    std::vector<imgTexture> asteroidTextureVector;
 
     if (!loadSpaceshipTexture(gameRenderer,spaceshipTexture)){
         std::cout<<"Failed to load spaceship!\n";
@@ -35,8 +38,13 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
-    if( !loadAsteroidTexture(gameRenderer,asteroidTexture)){
-        std::cout<<"Failed to load asteroid!\n";
+    //if( !loadAsteroidTexture(gameRenderer,asteroidTexture)){
+    //    std::cout<<"Failed to load asteroid!\n";
+    //    return EXIT_FAILURE;
+    //}
+
+    if(!loadAsteroidVectorTextures(gameRenderer,asteroidTextureVector)){
+        std::cout<<"Failed to load vector of asteroid textures!\n";
         return EXIT_FAILURE;
     }
 
@@ -46,10 +54,28 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
+    int totalAsteroidTextures = asteroidTextureVector.size();
+/*     std::cout<<totalAsteroidTextures<<std::endl;
+
+    //testing the textures
+    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 0xFF);
+    SDL_RenderClear(gameRenderer);
+
+    asteroidTextureVector[0].render(gameRenderer,0,0);
+    asteroidTextureVector[1].render(gameRenderer, 500,0);
+    asteroidTextureVector[2].render(gameRenderer, 1000,0);
+
+    SDL_RenderPresent(gameRenderer);
+
+ */
     std::list<Bullet> bulletsOnScreen;
     std::list<Asteroid> asteroidsOnScreen;
     int hitCounter = 0;
     
+    //Want to pair an asteroid with the texture to use for the rendering
+    std::list<std::pair<Asteroid,int> > asteroidTexturePair;
+
+
     //Set up texture for score
     textTexture scoreTexture;
     //Transparency set at 190/255
@@ -101,21 +127,49 @@ int main(int argc, char* args[]){
             bul.move();
         }
 
-        //Add Asteroids every 5 seconds
-        if(gameTimer.getTicks()/5000 >0){
+        //Add Asteroids every 3 seconds
+        if(gameTimer.getTicks()/3000 >0){
             gameTimer.stop();
             asteroidsOnScreen.emplace_back();
             gameTimer.start();
+
+            //Add a new asteroid and choose a texture for it randomly from the available ones
+            int num = CustomMath::getRandomInt(0,totalAsteroidTextures-1);
+            
+            int h = asteroidTextureVector[num].getHeight();
+            int w = asteroidTextureVector[num].getWidth();
+            asteroidTexturePair.emplace_back(Asteroid(h,w),num);
         }
 
         //Render asteroids on screen and move them
-        for(auto& ast : asteroidsOnScreen){
-            asteroidTexture.render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
+        // for(auto& ast : asteroidsOnScreen){
+        //     asteroidTexture.render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
+        //     ast.move();
+        //     ast.rotate();
+        // }
+
+        //Render asteroids on screen using the chosen texture and move them
+        for(auto & [ast,num] : asteroidTexturePair){
+            asteroidTextureVector[num].render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
             ast.move();
             ast.rotate();
         }
         
-        for(auto& ast : asteroidsOnScreen){
+        //Bullet and Asteroid collision detection
+        // for(auto& ast : asteroidsOnScreen){
+        //     for(auto& bul : bulletsOnScreen){
+        //         SDL_Rect bulRect = {bul.getXpos(),bul.getYpos(),bul.getWidth(),bul.getHeight()};
+        //         SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth(),ast.getHeight()};
+        //         if(areRectanglesColliding(&bulRect,&astRect)){
+        //             bul.hitsTarget();
+        //             ast.gotHit();
+        //             hitCounter++;
+        //         }
+        //     }
+        // }
+        
+        //Bullet and Asteroid collision detection2
+        for( auto& [ast,num] : asteroidTexturePair){
             for(auto& bul : bulletsOnScreen){
                 SDL_Rect bulRect = {bul.getXpos(),bul.getYpos(),bul.getWidth(),bul.getHeight()};
                 SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth(),ast.getHeight()};
@@ -131,8 +185,13 @@ int main(int argc, char* args[]){
         bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
 
         //remove off screen asteroids
-        asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();});
+//         asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();}); 
 
+        //remove off screen asteroids2
+        asteroidTexturePair.remove_if([](std::pair<Asteroid,int> &elem){
+            return elem.first.isOffScreen();
+        });
+        //Rendering score
         scoreText.str("");
         scoreText<<"Score: "<<hitCounter;
 
@@ -146,7 +205,19 @@ int main(int argc, char* args[]){
         bool gameOver = false;
 
         //check spaceship and asteroid collision
-        for(auto& ast : asteroidsOnScreen){
+        // for(auto& ast : asteroidsOnScreen){
+        //     SDL_Rect spaceshipRect = {ship.getXpos(),ship.getYpos(),ship.getWidth()-10,ship.getHeight()-10};
+        //     SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth()-10,ast.getHeight()-10};
+
+        //     //if collided then quit the main event loop
+        //     if(areRectanglesColliding(&spaceshipRect,&astRect)){
+        //         gameOver = true;
+        //         break;
+        //     }
+        // }
+
+        //check spaceship and asteroid collision2
+        for(auto& [ast,num] : asteroidTexturePair){
             SDL_Rect spaceshipRect = {ship.getXpos(),ship.getYpos(),ship.getWidth()-10,ship.getHeight()-10};
             SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth()-10,ast.getHeight()-10};
 
@@ -164,6 +235,7 @@ int main(int argc, char* args[]){
 
     }
 
+
     //keep the screen until player closes the window
     while(!quit){
         while(SDL_PollEvent(&e)!=0){
@@ -176,6 +248,11 @@ int main(int argc, char* args[]){
     spaceshipTexture.free();
     bulletTexture.free();
     scoreTexture.free();
+    //asteroidTexture.free();
+
+    for(auto& ast: asteroidTextureVector){
+        ast.free();
+    }
 
     SDL_DestroyRenderer(gameRenderer);
     SDL_DestroyWindow(gameWindow);
