@@ -38,36 +38,26 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
-    //if( !loadAsteroidTexture(gameRenderer,asteroidTexture)){
-    //    std::cout<<"Failed to load asteroid!\n";
-    //    return EXIT_FAILURE;
-    //}
-
     if(!loadAsteroidVectorTextures(gameRenderer,asteroidTextureVector)){
         std::cout<<"Failed to load vector of asteroid textures!\n";
         return EXIT_FAILURE;
     }
-
+    int totalAsteroidTextures = asteroidTextureVector.size();
+    
     TTF_Font* scoreFont = NULL;
     if( !loadTextFont(&scoreFont, 50)){
         std::cout<<"\nFailed to load font!\n";
         return EXIT_FAILURE;
     }
 
-    int totalAsteroidTextures = asteroidTextureVector.size();
-/*     std::cout<<totalAsteroidTextures<<std::endl;
+    TTF_Font* titleFont = NULL;
+    if(!loadTextFont(&titleFont, 80)){
+        std::cout<<"\nFailed to load font for title!\n";
+        return EXIT_FAILURE;
+    }
 
-    //testing the textures
-    SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 0xFF);
-    SDL_RenderClear(gameRenderer);
 
-    asteroidTextureVector[0].render(gameRenderer,0,0);
-    asteroidTextureVector[1].render(gameRenderer, 500,0);
-    asteroidTextureVector[2].render(gameRenderer, 1000,0);
 
-    SDL_RenderPresent(gameRenderer);
-
- */
     std::list<Bullet> bulletsOnScreen;
     std::list<Asteroid> asteroidsOnScreen;
     int hitCounter = 0;
@@ -82,14 +72,80 @@ int main(int argc, char* args[]){
     scoreTexture.setAlpha(190);
     //text color set at white
     SDL_Color scoreColor={255,255,255};
-    std::stringstream scoreText;
 
+    //Set up texture for title
+    textTexture titleTexture;
+    SDL_Color titleColor={0,255,0};
+    if(!titleTexture.loadTextTexture("ASTEROIDS",gameRenderer,titleColor,titleFont)){
+        std::cout<<"\nFailed to load title text texture!\n";
+        return EXIT_FAILURE;
+    }
+
+    //Set up button to start the game
+
+    TTF_Font* gameButtonFont =NULL;
+    if(!loadTextFont(&gameButtonFont,30)){
+        std::cout<<"\nFailed to load font for game buttons!\n";
+        return EXIT_FAILURE;
+    }
+
+    textTexture startGameTexture;
+    SDL_Color startGameColor = {255,255,255};
+    if(!startGameTexture.loadTextTexture("Start Game",gameRenderer,startGameColor,gameButtonFont)){
+        std::cout<<"Failed to load texture for \"Start Game\" button\n";
+        return EXIT_FAILURE;
+    }
+
+    bool beginGame = false;
     bool quit = false;
     SDL_Event e;
+    
+    int titleXpos = (SCREEN_WIDTH - titleTexture.getWidth())/2;
+    int titleYpos = 100;
+    int startGameButtonXpos = (SCREEN_WIDTH - startGameTexture.getWidth())/2;
+    int startGameButtonYpos = SCREEN_HEIGHT/2;
+    SDL_Rect boundingStartButton = {startGameButtonXpos,startGameButtonYpos,startGameTexture.getWidth(),startGameTexture.getHeight()};
+    
+    while(!beginGame && !quit){
+        bool highlightStartButton = false;
+        while(SDL_PollEvent(&e)!=0){
+            if (e.type == SDL_QUIT) {
+                quit = true;
+            }
+            if(e.type == SDL_MOUSEBUTTONDOWN){
+                int mouseX,mouseY;
+                SDL_GetMouseState(&mouseX,&mouseY);
+                if( mouseX > startGameButtonXpos && mouseX < startGameButtonXpos + startGameTexture.getWidth() && mouseY > startGameButtonYpos && mouseY <startGameButtonYpos + startGameTexture.getHeight())
+                    beginGame = true;
+            }
+        }
+
+        SDL_SetRenderDrawColor(gameRenderer, 0, 0, 0, 0xFF);
+        SDL_RenderClear(gameRenderer);
+
+        titleTexture.render(gameRenderer,titleXpos, titleYpos);
+
+        int mouseX,mouseY;
+        SDL_GetMouseState(&mouseX,&mouseY);
+        if( mouseX > startGameButtonXpos && mouseX < startGameButtonXpos + startGameTexture.getWidth() && mouseY > startGameButtonYpos && mouseY <startGameButtonYpos + startGameTexture.getHeight()){
+            SDL_SetRenderDrawColor(gameRenderer,0,150,0,20);
+            SDL_RenderFillRect(gameRenderer,&boundingStartButton);
+        }
+
+        startGameTexture.render(gameRenderer,startGameButtonXpos,startGameButtonYpos);
+
+        SDL_RenderPresent(gameRenderer);
+    }
+
+
+    std::stringstream scoreText;
+
 
     GameTimer gameTimer;
     gameTimer.start();
 
+
+    //main game starts
     while(!quit){
     // Handle events (quitting, one-time actions like shooting)
     while (SDL_PollEvent(&e) != 0) {
@@ -141,32 +197,12 @@ int main(int argc, char* args[]){
             asteroidTexturePair.emplace_back(Asteroid(h,w),num);
         }
 
-        //Render asteroids on screen and move them
-        // for(auto& ast : asteroidsOnScreen){
-        //     asteroidTexture.render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
-        //     ast.move();
-        //     ast.rotate();
-        // }
-
         //Render asteroids on screen using the chosen texture and move them
         for(auto & [ast,num] : asteroidTexturePair){
             asteroidTextureVector[num].render(gameRenderer,ast.getXpos(),ast.getYpos(),ast.getAngle());
             ast.move();
             ast.rotate();
         }
-        
-        //Bullet and Asteroid collision detection
-        // for(auto& ast : asteroidsOnScreen){
-        //     for(auto& bul : bulletsOnScreen){
-        //         SDL_Rect bulRect = {bul.getXpos(),bul.getYpos(),bul.getWidth(),bul.getHeight()};
-        //         SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth(),ast.getHeight()};
-        //         if(areRectanglesColliding(&bulRect,&astRect)){
-        //             bul.hitsTarget();
-        //             ast.gotHit();
-        //             hitCounter++;
-        //         }
-        //     }
-        // }
         
         //Bullet and Asteroid collision detection2
         for( auto& [ast,num] : asteroidTexturePair){
@@ -184,13 +220,11 @@ int main(int argc, char* args[]){
         //remove off screen bullets
         bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
 
-        //remove off screen asteroids
-//         asteroidsOnScreen.remove_if([](Asteroid ast){ return ast.isOffScreen();}); 
-
         //remove off screen asteroids2
         asteroidTexturePair.remove_if([](std::pair<Asteroid,int> &elem){
             return elem.first.isOffScreen();
         });
+
         //Rendering score
         scoreText.str("");
         scoreText<<"Score: "<<hitCounter;
@@ -203,18 +237,6 @@ int main(int argc, char* args[]){
         scoreTexture.render(gameRenderer,SCREEN_WIDTH-scoreTexture.getWidth()-30, 5);
 
         bool gameOver = false;
-
-        //check spaceship and asteroid collision
-        // for(auto& ast : asteroidsOnScreen){
-        //     SDL_Rect spaceshipRect = {ship.getXpos(),ship.getYpos(),ship.getWidth()-10,ship.getHeight()-10};
-        //     SDL_Rect astRect = {ast.getXpos(),ast.getYpos(),ast.getWidth()-10,ast.getHeight()-10};
-
-        //     //if collided then quit the main event loop
-        //     if(areRectanglesColliding(&spaceshipRect,&astRect)){
-        //         gameOver = true;
-        //         break;
-        //     }
-        // }
 
         //check spaceship and asteroid collision2
         for(auto& [ast,num] : asteroidTexturePair){
