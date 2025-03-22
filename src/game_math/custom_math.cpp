@@ -48,3 +48,12 @@ namespace CustomMath{
         return dist(gen);
     }
 }
+
+double newAngleAfterCollision(std::pair<int,int> center1, std::pair<int,int> center2, double angleVelocity1){
+    double x = center2.first - center1.first;
+    double y = center2.second - center1.second;
+
+    //atan returns angle in radians
+    double theta = atan(x/y)*180.0/3.1415;
+    return 180-angleVelocity1-2*theta;
+}

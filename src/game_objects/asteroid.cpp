@@ -110,3 +110,11 @@ double Asteroid::getAngle(){
 void Asteroid::gotHit(){
     offScreen = true;
 }
+
+double Asteroid::getAngleMovement(){
+    return angleMovement;
+}
+
+void Asteroid::updateAngleMovement(double newAngle){
+    angleMovement = newAngle;
+}

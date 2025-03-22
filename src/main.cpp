@@ -106,6 +106,7 @@ int main(int argc, char* args[]){
     int startGameButtonYpos = SCREEN_HEIGHT/2;
     SDL_Rect boundingStartButton = {startGameButtonXpos,startGameButtonYpos,startGameTexture.getWidth(),startGameTexture.getHeight()};
     
+    //start screen
     while(!beginGame && !quit){
         bool highlightStartButton = false;
         while(SDL_PollEvent(&e)!=0){
@@ -217,6 +218,7 @@ int main(int argc, char* args[]){
             }
         }
 
+
         //remove off screen bullets
         bulletsOnScreen.remove_if([](Bullet bul){return bul.isOffScreen() ;});
 
@@ -224,6 +226,24 @@ int main(int argc, char* args[]){
         asteroidTexturePair.remove_if([](std::pair<Asteroid,int> &elem){
             return elem.first.isOffScreen();
         });
+
+        //Check Asteroid Asteroid collision and bounce them off each other
+        std::list<std::pair<Asteroid,int> >::iterator it1,it2;
+        for(it1=asteroidTexturePair.begin(); it1!= asteroidTexturePair.end();it1++){
+            for(it2 = std::next(it1); it2!= asteroidTexturePair.end();it2++){
+                SDL_Rect astRect1 = {(it1->first).getXpos(),(it1->first).getYpos(), (it1->first).getWidth(),(it1->first).getHeight()};
+                SDL_Rect astRect2 = {(it2->first).getXpos(),(it2->first).getYpos(), (it2->first).getWidth(),(it2->first).getHeight()};
+
+                if(areRectanglesColliding(&astRect1,&astRect2)){
+                    std::pair<int,int> center1 = {(astRect1.x + astRect1.w)/2, (astRect1.y + astRect1.h)/2};
+                    std::pair<int,int> center2 = {(astRect2.x + astRect2.w)/2, (astRect2.y + astRect2.h)/2};
+                    double newAngle1 = newAngleAfterCollision(center1,center2, (it1->first).getAngleMovement());
+                    double newAngle2 = newAngleAfterCollision(center2, center1, (it2->first).getAngleMovement());
+                    (it1->first).updateAngleMovement(newAngle1);
+                    (it2->first).updateAngleMovement(newAngle2);
+                }
+            }
+        }
 
         //Rendering score
         scoreText.str("");
@@ -245,7 +265,7 @@ int main(int argc, char* args[]){
 
             //if collided then quit the main event loop
             if(areRectanglesColliding(&spaceshipRect,&astRect)){
-                gameOver = true;
+            //    gameOver = true;
                 break;
             }
         }

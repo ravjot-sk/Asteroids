@@ -45,6 +45,10 @@ class Asteroid{
     //After collision set to offscreen
     void gotHit();
 
+    double getAngleMovement();
+
+    //Update angle of movement after collision with another asteroid
+    void updateAngleMovement(double newAngle);
 };
 
 #endif
