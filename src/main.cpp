@@ -19,7 +19,7 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
-    Spaceship ship;
+
     imgTexture spaceshipTexture;
 
     imgTexture bulletTexture;
@@ -57,14 +57,12 @@ int main(int argc, char* args[]){
     }
 
 
+    //initialise static variables
+    Bullet::initialise(bulletTexture.getHeight(),bulletTexture.getWidth(),0,spaceshipTexture.getHeight()/2);
+    Spaceship::initialise(spaceshipTexture.getHeight(),spaceshipTexture.getWidth(),spaceshipTexture.getWidth()/2,0);
 
-    std::list<Bullet> bulletsOnScreen;
-    std::list<Asteroid> asteroidsOnScreen;
-    int hitCounter = 0;
-    
-    //Want to pair an asteroid with the texture to use for the rendering
-    std::list<std::pair<Asteroid,int> > asteroidTexturePair;
-
+    //Bullet::initialise();
+    //Spaceship::initialise();
 
     //Set up texture for score
     textTexture scoreTexture;
@@ -96,9 +94,7 @@ int main(int argc, char* args[]){
         return EXIT_FAILURE;
     }
 
-    bool beginGame = false;
-    bool quit = false;
-    SDL_Event e;
+
     
     int titleXpos = (SCREEN_WIDTH - titleTexture.getWidth())/2;
     int titleYpos = 100;
@@ -106,7 +102,13 @@ int main(int argc, char* args[]){
     int startGameButtonYpos = SCREEN_HEIGHT/2;
     SDL_Rect boundingStartButton = {startGameButtonXpos,startGameButtonYpos,startGameTexture.getWidth(),startGameTexture.getHeight()};
     
+    bool quit = false;
+    while(!quit){
     //start screen
+    bool beginGame = false;
+
+    SDL_Event e;
+
     while(!beginGame && !quit){
         bool highlightStartButton = false;
         while(SDL_PollEvent(&e)!=0){
@@ -138,7 +140,13 @@ int main(int argc, char* args[]){
         SDL_RenderPresent(gameRenderer);
     }
 
-
+    Spaceship ship;
+    std::list<Bullet> bulletsOnScreen;
+    std::list<Asteroid> asteroidsOnScreen;
+    int hitCounter = 0;
+    
+    //Want to pair an asteroid with the texture to use for the rendering
+    std::list<std::pair<Asteroid,int> > asteroidTexturePair;
     std::stringstream scoreText;
 
 
@@ -265,26 +273,27 @@ int main(int argc, char* args[]){
 
             //if collided then quit the main event loop
             if(areRectanglesColliding(&spaceshipRect,&astRect)){
-            //    gameOver = true;
+                gameOver = true;
                 break;
             }
         }
 
         SDL_RenderPresent(gameRenderer);
         if(gameOver){
+            SDL_Delay(3000);
             break;
         }
 
     }
 
-
-    //keep the screen until player closes the window
-    while(!quit){
-        while(SDL_PollEvent(&e)!=0){
-            if(e.type== SDL_QUIT)
-                quit = true;
-        }
     }
+    //keep the screen until player closes the window
+    // while(!quit){
+    //     while(SDL_PollEvent(&e)!=0){
+    //         if(e.type== SDL_QUIT)
+    //             quit = true;
+    //     }
+    // }
 
 
     spaceshipTexture.free();
