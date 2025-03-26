@@ -10,12 +10,12 @@ class Spaceship{
         double angleDegrees;
 
         //Spaceship Dimensions set based on the image used
-        static const int height = 100;
-        static const int width = 78;
+        static int height;
+        static int width;
 
         //Gun Position based on image used
-        static const int gunPosX = 73;
-        static const int gunPosY = 83;
+        static int gunPosX;
+        static int gunPosY;
 
         //Sets the minimum move increments
         static constexpr int MOVE_VELOCITY = 5;
@@ -23,6 +23,8 @@ class Spaceship{
     public:
         //Initialises variables
         Spaceship();
+
+        static void initialise(int h = 100, int w = 78, int gunX = 73, int gunY = 83);
 
         //Moving the spaceship
         void moveForward();

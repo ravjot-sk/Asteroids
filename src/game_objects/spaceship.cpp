@@ -5,12 +5,24 @@
 #include "SDL2/SDL.h"
 #include <array>
 
+int Spaceship::width;
+int Spaceship::height;
+int Spaceship::gunPosX;
+int Spaceship::gunPosY;
+
 Spaceship::Spaceship(){     
 
     //Set initial position of Spaceship in middle of screen and initial rotation angle
     yPos = SCREEN_HEIGHT/2;
     xPos = SCREEN_WIDTH/2;
     angleDegrees = 0.0;
+}
+
+void Spaceship::initialise(int h, int w, int gunX, int gunY){
+    height = h;
+    width = w;
+    gunPosX = gunX;
+    gunPosY = gunY;
 }
 
 

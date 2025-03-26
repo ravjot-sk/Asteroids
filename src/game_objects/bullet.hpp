@@ -6,12 +6,12 @@
 class Bullet{
     private:
         //Bullet dimensions set based on image used
-        static const int height = 50;
-        static const int width = 41;
+        static int height;
+        static int width;
 
         //Rel coordinates of spaceship center from Bullet origin. Will be needed to rotate the bullet along with the spaceship
-        static const int rotationCenterX =-34;
-        static const int rotationCenterY =-33;
+        static int rotationCenterX;
+        static int rotationCenterY;
 
         //Position on screen
         int xPos,yPos;
@@ -32,6 +32,8 @@ class Bullet{
     public:
         //Initialise bullet characteristics
         Bullet(int x, int y, double ang);
+
+        static void initialise(int h =50, int w = 41,int rotX = -34, int rotY =-33);
 
         //Move the bullet the distance based on how much time
         void move(int timeElapsed=1);

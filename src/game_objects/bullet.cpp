@@ -2,6 +2,11 @@
 #include "custom_math.hpp"
 #include "game_constants.hpp"
 
+int Bullet::height;
+int Bullet::width;
+int Bullet::rotationCenterX;
+int Bullet::rotationCenterY;
+
 Bullet::Bullet(int x, int y, double ang){
 
     //Set bullet start position
@@ -12,10 +17,16 @@ Bullet::Bullet(int x, int y, double ang){
     angleDegrees = ang;
 
     //Set bullet firing angle
-    firingAngle = ang+30+90;
+    firingAngle = ang;// +30+90;
 
     // Bullet should be initially on screen
     offScreen = false;
+}
+ void Bullet::initialise(int h, int w, int rotX, int rotY){
+    height = h;
+    width = w;
+    rotationCenterX = rotX;
+    rotationCenterY = rotY;
 }
 
 void Bullet::move(int timeElapsed){
